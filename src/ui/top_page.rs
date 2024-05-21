@@ -1,8 +1,17 @@
 use ratatui::{
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
-    widgets::{Block, BorderType, Borders, HighlightSpacing, List, ListState, Paragraph},
+    widgets::{Block, BorderType, Borders, List, ListState, Paragraph},
 };
+
+pub struct ListWithState<'a> {
+    pub vec: Option<&'a Vec<String>>,
+    pub list_state: ListState,
+}
+pub struct Data<'a> {
+    pub focus_idx: usize,
+    pub contests: [ListWithState<'a>; 3],
+}
 
 fn get_block(is_activated: bool) -> Block<'static> {
     Block::default()
@@ -18,14 +27,14 @@ fn get_block(is_activated: bool) -> Block<'static> {
         .clone()
 }
 
-fn gen_list(vec: Vec<&str>) -> List {
-    List::new(vec)
+fn gen_list(vec: &Vec<String>) -> List<'static> {
+    List::new(vec.clone())
         .highlight_symbol(">")
         .highlight_style(Modifier::BOLD)
         .clone()
 }
 
-pub fn top_page(f: &mut ratatui::Frame, focus_idx: usize, lis_state: &mut ListState) -> usize {
+pub fn top_page(f: &mut ratatui::Frame, data: &mut Data) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([Constraint::Percentage(5), Constraint::Percentage(95)].as_ref())
@@ -48,45 +57,27 @@ pub fn top_page(f: &mut ratatui::Frame, focus_idx: usize, lis_state: &mut ListSt
         )
         .split(chunks[1]);
 
-    let mut to_ret = 0;
-
-    let active_contests = gen_list(vec!["テスト", "です", "ね〜〜〜〜〜〜〜"])
-        .block(get_block(focus_idx == 0).title("Active Contests"));
-    if focus_idx == 0 {
-        to_ret = active_contests.len();
-    }
-
-    let mut tmp = ListState::default();
+    let active_contests = gen_list(data.contests[0].vec.unwrap())
+        .block(get_block(data.focus_idx == 0).title("Active Contests"));
     f.render_stateful_widget(
         active_contests,
         contests[0],
-        if focus_idx == 0 { lis_state } else { &mut tmp },
+        &mut data.contests[0].list_state,
     );
 
-    let upcoming_contests = gen_list(vec!["テスト", "です", "ね〜〜〜〜〜〜〜"])
-        .block(get_block(focus_idx == 1).title("Upcoming Contests"));
-    if focus_idx == 1 {
-        to_ret = upcoming_contests.len();
-    }
-
-    tmp = ListState::default();
+    let upcoming_contests = gen_list(data.contests[1].vec.unwrap())
+        .block(get_block(data.focus_idx == 1).title("Upcoming Contests"));
     f.render_stateful_widget(
         upcoming_contests,
         contests[1],
-        if focus_idx == 1 { lis_state } else { &mut tmp },
+        &mut data.contests[1].list_state,
     );
 
-    let recent_contests = gen_list(vec!["テスト", "です", "ね〜〜〜〜〜〜〜"])
-        .block(get_block(focus_idx == 2).title("Recent Contests"));
-    if focus_idx == 2 {
-        to_ret = recent_contests.len();
-    }
-
-    tmp = ListState::default();
+    let recent_contests = gen_list(data.contests[2].vec.unwrap())
+        .block(get_block(data.focus_idx == 2).title("Recent Contests"));
     f.render_stateful_widget(
         recent_contests,
         contests[2],
-        if focus_idx == 2 { lis_state } else { &mut tmp },
+        &mut data.contests[2].list_state,
     );
-    return to_ret;
 }

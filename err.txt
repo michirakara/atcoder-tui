@@ -1,0 +1,6 @@
+   Compiling atcoder-tui v0.1.0 (/home/michirakara/atcoder-tui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.24s
+     Running `target/debug/atcoder-tui`
+thread 'main' panicked at src/backend/top_page.rs:13:10:
+called `Result::unwrap()` on an `Err` value: reqwest::Error { kind: Request, url: Url { scheme: "https", cannot_be_a_base: false, username: "", password: None, host: Some(Domain("atcoder.jp")), port: None, path: "/contests", query: Some("lang=en"), fragment: None }, source: Error { kind: Connect, source: Some(ConnectError("dns error", Custom { kind: Uncategorized, error: "failed to lookup address information: No address associated with hostname" })) } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
