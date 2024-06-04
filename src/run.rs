@@ -16,7 +16,6 @@ pub fn run() {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).unwrap();
 
-    // handler::loading::loading(&mut terminal);
     handler::top_page::top_page(&mut terminal);
 
     disable_raw_mode().unwrap();

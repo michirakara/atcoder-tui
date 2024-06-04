@@ -13,7 +13,7 @@ pub struct Data<'a> {
     pub contests: [ListWithState<'a>; 3],
 }
 
-fn get_block(is_activated: bool) -> Block<'static> {
+fn gen_block(is_activated: bool) -> Block<'static> {
     Block::default()
         .borders(Borders::ALL)
         .border_style(if is_activated {
@@ -24,14 +24,12 @@ fn get_block(is_activated: bool) -> Block<'static> {
             Style::default().fg(Color::White)
         })
         .border_type(BorderType::Double)
-        .clone()
 }
 
 fn gen_list(vec: &Vec<String>) -> List<'static> {
     List::new(vec.clone())
         .highlight_symbol(">")
         .highlight_style(Modifier::BOLD)
-        .clone()
 }
 
 pub fn top_page(f: &mut ratatui::Frame, data: &mut Data) {
@@ -58,7 +56,7 @@ pub fn top_page(f: &mut ratatui::Frame, data: &mut Data) {
         .split(chunks[1]);
 
     let active_contests = gen_list(data.contests[0].vec.unwrap())
-        .block(get_block(data.focus_idx == 0).title("Active Contests"));
+        .block(gen_block(data.focus_idx == 0).title("Active Contests"));
     f.render_stateful_widget(
         active_contests,
         contests[0],
@@ -66,7 +64,7 @@ pub fn top_page(f: &mut ratatui::Frame, data: &mut Data) {
     );
 
     let upcoming_contests = gen_list(data.contests[1].vec.unwrap())
-        .block(get_block(data.focus_idx == 1).title("Upcoming Contests"));
+        .block(gen_block(data.focus_idx == 1).title("Upcoming Contests"));
     f.render_stateful_widget(
         upcoming_contests,
         contests[1],
@@ -74,7 +72,7 @@ pub fn top_page(f: &mut ratatui::Frame, data: &mut Data) {
     );
 
     let recent_contests = gen_list(data.contests[2].vec.unwrap())
-        .block(get_block(data.focus_idx == 2).title("Recent Contests"));
+        .block(gen_block(data.focus_idx == 2).title("Recent Contests"));
     f.render_stateful_widget(
         recent_contests,
         contests[2],

@@ -1,7 +1,10 @@
 use reqwest;
 use scraper::{Html, Selector};
 
-pub fn get_contests() -> (Vec<String>, Vec<String>, Vec<String>) {
+pub fn get_contests() -> (
+    (Vec<String>, Vec<String>, Vec<String>),
+    (Vec<String>, Vec<String>, Vec<String>),
+) {
     let selector_active =
         Selector::parse("#contest-table-action tr td:not(.text-center) a").unwrap();
     let selector_upcoming =
@@ -17,10 +20,25 @@ pub fn get_contests() -> (Vec<String>, Vec<String>, Vec<String>) {
     let active_elements = document.select(&selector_active);
     let upcoming_elements = document.select(&selector_upcoming);
     let recent_elements = document.select(&selector_recent);
-
     (
-        active_elements.map(|e| e.text().collect()).collect(),
-        upcoming_elements.map(|e| e.text().collect()).collect(),
-        recent_elements.map(|e| e.text().collect()).collect(),
+        (
+            active_elements
+                .clone()
+                .map(|e| e.attr("href").unwrap().replace("/contests/", "").to_owned())
+                .collect(),
+            upcoming_elements
+                .clone()
+                .map(|e| e.attr("href").unwrap().replace("/contests/", "").to_owned())
+                .collect(),
+            recent_elements
+                .clone()
+                .map(|e| e.attr("href").unwrap().replace("/contests/", "").to_owned())
+                .collect(),
+        ),
+        (
+            active_elements.map(|e| e.text().collect()).collect(),
+            upcoming_elements.map(|e| e.text().collect()).collect(),
+            recent_elements.map(|e| e.text().collect()).collect(),
+        ),
     )
 }

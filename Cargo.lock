@@ -41,6 +41,7 @@ name = "atcoder-tui"
 version = "0.1.0"
 dependencies = [
  "crossterm",
+ "ego-tree",
  "ratatui",
  "reqwest",
  "scraper",

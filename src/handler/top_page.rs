@@ -1,12 +1,19 @@
 use crate::backend;
+use crate::handler;
 use crate::ui;
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use ratatui::{widgets::ListState, Terminal};
 
 pub fn top_page<T: ratatui::backend::Backend>(terminal: &mut Terminal<T>) {
-    terminal.clear().unwrap();
+    handler::loading::loading(terminal);
 
-    let (active_contests, upcoming_contests, recent_contests) = backend::top_page::get_contests();
+    let (tmp, (active_contests, upcoming_contests, recent_contests)) =
+        backend::top_page::get_contests();
+
+    let contest_path = [tmp.0, tmp.1, tmp.2];
+    // dbg!(contest_path.clone());
+
+    terminal.clear().unwrap();
 
     let mut data = ui::top_page::Data {
         focus_idx: 0,
@@ -74,6 +81,17 @@ pub fn top_page<T: ratatui::backend::Backend>(terminal: &mut Terminal<T>) {
                                 % lis_len,
                         ))
                     };
+                }
+                (KeyCode::Enter, KeyEventKind::Press) => {
+                    if data.contests[data.focus_idx].list_state.selected() != None {
+                        handler::contest::contest(
+                            terminal,
+                            &contest_path[data.focus_idx]
+                                [data.contests[data.focus_idx].list_state.selected().unwrap()]
+                            .clone(),
+                        );
+                        break;
+                    }
                 }
                 _ => {}
             }
